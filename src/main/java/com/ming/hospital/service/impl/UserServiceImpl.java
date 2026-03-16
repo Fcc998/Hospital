@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean register(User user) {
-        String pwd = CommonUtils.MD5(user.getPwd());
+        String pwd = CommonUtils.BCryptEncode(user.getPwd());
         user.setPwd(pwd);
         int insert = userMapper.insert(user);
         //发送邮箱
@@ -57,10 +57,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public User login(User user) {
         UserExample userExample = new UserExample();
-        String pwd = CommonUtils.MD5(user.getPwd());
-        userExample.createCriteria().andUserEqualTo(user.getUser()).andPwdEqualTo(pwd);
+        userExample.createCriteria().andUserEqualTo(user.getUser());
         List<User> users = userMapper.selectByExample(userExample);
-        return users.size() > 0 ? users.get(0): null;
+        if (users.size() > 0) {
+            User storedUser = users.get(0);
+            if (CommonUtils.BCryptMatch(user.getPwd(), storedUser.getPwd())) {
+                return storedUser;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -70,5 +75,29 @@ public class UserServiceImpl implements UserService {
         List<User> users = userMapper.selectByExample(userExample);
         return users.size() > 0 ? true : false;
 
+    }
+
+    @Override
+    public User findByPhone(String phone) {
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andPhoneEqualTo(phone);
+        List<User> users = userMapper.selectByExample(userExample);
+        return users.size() > 0 ? users.get(0) : null;
+    }
+
+    @Override
+    public boolean checkPhoneExist(String phone) {
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andPhoneEqualTo(phone);
+        List<User> users = userMapper.selectByExample(userExample);
+        return users.size() > 0;
+    }
+
+    @Override
+    public User loginByPhone(String phone) {
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andPhoneEqualTo(phone);
+        List<User> users = userMapper.selectByExample(userExample);
+        return users.size() > 0 ? users.get(0) : null;
     }
 }

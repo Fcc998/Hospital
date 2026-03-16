@@ -21,6 +21,14 @@ public class Appointment {
 
     private Date updatetime;
 
+    private Integer payStatus;
+
+    private String payType;
+
+    private Double payAmount;
+
+    private Date payTime;
+
     public Long getAid() {
         return aid;
     }
@@ -91,6 +99,38 @@ public class Appointment {
 
     public void setUpdatetime(Date updatetime) {
         this.updatetime = updatetime;
+    }
+
+    public Integer getPayStatus() {
+        return payStatus;
+    }
+
+    public void setPayStatus(Integer payStatus) {
+        this.payStatus = payStatus;
+    }
+
+    public String getPayType() {
+        return payType;
+    }
+
+    public void setPayType(String payType) {
+        this.payType = payType;
+    }
+
+    public Double getPayAmount() {
+        return payAmount;
+    }
+
+    public void setPayAmount(Double payAmount) {
+        this.payAmount = payAmount;
+    }
+
+    public Date getPayTime() {
+        return payTime;
+    }
+
+    public void setPayTime(Date payTime) {
+        this.payTime = payTime;
     }
 
     @Override

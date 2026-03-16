@@ -12,4 +12,7 @@ public interface UserService {
     boolean active(String code);
     User login(User user);
     boolean checkUserName(String user);
+    User findByPhone(String phone);
+    boolean checkPhoneExist(String phone);
+    User loginByPhone(String phone);
 }

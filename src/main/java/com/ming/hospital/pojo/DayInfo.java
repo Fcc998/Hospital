@@ -12,6 +12,9 @@ public class DayInfo {
 	private int sw;
 	private int xw;
 	private int ws;
+	private int swAvailable = 20;
+	private int xwAvailable = 20;
+	private int wsAvailable = 20;
 
 	public String getDate() {
 		return date;
@@ -53,6 +56,30 @@ public class DayInfo {
 		this.ws = ws;
 	}
 
+	public int getSwAvailable() {
+		return swAvailable;
+	}
+
+	public void setSwAvailable(int swAvailable) {
+		this.swAvailable = swAvailable;
+	}
+
+	public int getXwAvailable() {
+		return xwAvailable;
+	}
+
+	public void setXwAvailable(int xwAvailable) {
+		this.xwAvailable = xwAvailable;
+	}
+
+	public int getWsAvailable() {
+		return wsAvailable;
+	}
+
+	public void setWsAvailable(int wsAvailable) {
+		this.wsAvailable = wsAvailable;
+	}
+
 	public String getFullDate() {
 		return fullDate;
 	}
@@ -67,9 +94,12 @@ public class DayInfo {
 				"date='" + date + '\'' +
 				", week='" + week + '\'' +
 				", fullDate='" + fullDate + '\'' +
-				", sw=" + sw +
+				","sw=" + sw +
 				", xw=" + xw +
 				", ws=" + ws +
+				", swAvailable=" + swAvailable +
+				", xwAvailable=" + xwAvailable +
+				", wsAvailable=" + wsAvailable +
 				'}';
 	}
 }

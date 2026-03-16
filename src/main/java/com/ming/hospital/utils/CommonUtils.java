@@ -1,12 +1,15 @@
 package com.ming.hospital.utils;
 
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.DigestUtils;
 
 /**
  * Created by Ming on 2017/11/17.
  */
 public class CommonUtils {
+
+    private static final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     public static Long getId(){
         Long id = System.currentTimeMillis();
@@ -22,8 +25,19 @@ public class CommonUtils {
         return md5;
     }
 
+    public static String BCryptEncode(String key) {
+        return bCryptPasswordEncoder.encode(key);
+    }
+
+    public static boolean BCryptMatch(String key, String hashedPassword) {
+        return bCryptPasswordEncoder.matches(key, hashedPassword);
+    }
+
     public static void main(String[] args) {
         System.out.println(MD5("admin"));
+        String hashed = BCryptEncode("admin");
+        System.out.println("BCrypt hash: " + hashed);
+        System.out.println("BCrypt match: " + BCryptMatch("admin", hashed));
 
     }
 

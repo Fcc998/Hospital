@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.servlet.http.HttpSession;
 import java.util.*;
 /**
@@ -22,6 +25,8 @@ import java.util.*;
 @Controller
 @RequestMapping("/appointment")
 public class AppointmentController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AppointmentController.class);
 
     @Autowired
     private DoctorService doctorService;
@@ -60,5 +65,46 @@ public class AppointmentController {
             }
         }
         return resultData;
+    }
+
+    @RequestMapping("/pay/{aid}")
+    public String showPayPage(@PathVariable Long aid, Model model) {
+        logger.info("Showing payment page for appointment: {}", aid);
+        Appointment appointment = appointmentService.getById(aid);
+        model.addAttribute("appointment", appointment);
+        return "pay";
+    }
+
+    @RequestMapping("/processPay")
+    @ResponseBody
+    public String processPay(Long aid, String payType, HttpSession session) {
+        logger.info("Processing payment for appointment: {}, payType: {}", aid, payType);
+        try {
+            User user = (User) session.getAttribute("user");
+            if (user == null) {
+                return "-1";
+            }
+            Appointment appointment = appointmentService.getById(aid);
+            if (appointment == null) {
+                return "-2";
+            }
+            boolean success = appointmentService.updatePayStatus(aid, 1, payType, appointment.getPayAmount());
+            if (success) {
+                logger.info("Payment successful for appointment: {}", aid);
+                return String.valueOf(aid);
+            } else {
+                return "-3";
+            }
+        } catch (Exception e) {
+            logger.error("Payment processing error", e);
+            return "-4";
+        }
+    }
+
+    @RequestMapping("/paySuccess/{aid}")
+    public String paySuccess(@PathVariable Long aid, Model model) {
+        Appointment appointment = appointmentService.getById(aid);
+        model.addAttribute("appointment", appointment);
+        return "pay_success";
     }
 }

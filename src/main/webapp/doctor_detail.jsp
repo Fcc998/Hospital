@@ -150,11 +150,22 @@
                                                     <c:forEach items="${dayInfoList}" var="dayInfo">
                                                         <td>
                                                             <c:if test="${dayInfo.sw == 1}">
-                                                                <div class="inner-border opening">
-                                                                    <a hidefocus="true" class="opening" href="appointment/${doctor.did}?dayInfo=${dayInfo.fullDate}(${dayInfo.week})上午">
-                                                                        <span class="normal-type">点击预约</span>
-                                                                    </a>
-                                                                </div>
+                                                                <c:choose>
+                                                                    <c:when test="${dayInfo.swAvailable > 0}">
+                                                                        <div class="inner-border opening">
+                                                                            <a hidefocus="true" class="opening" href="appointment/${doctor.did}?dayInfo=${dayInfo.fullDate}(${dayInfo.week})上午">
+                                                                                <span class="normal-type">可约 (${dayInfo.swAvailable})</span>
+                                                                            </a>
+                                                                        </div>
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <div class="inner-border">
+                                                                            <a hidefocus="true" href="javascript:void 0">
+                                                                                <span class="normal-type">已满</span>
+                                                                            </a>
+                                                                        </div>
+                                                                    </c:otherwise>
+                                                                </c:choose>
                                                             </c:if>
                                                             <c:if test="${dayInfo.sw != 1}">
                                                                 <div class="inner-border">
@@ -171,11 +182,22 @@
                                                     <c:forEach items="${dayInfoList}" var="dayInfo">
                                                         <td>
                                                             <c:if test="${dayInfo.xw == 1}">
-                                                                <div class="inner-border opening">
-                                                                    <a hidefocus="true" class="opening" href="appointment/${doctor.did}?dayInfo=${dayInfo.fullDate}(${dayInfo.week})下午">
-                                                                        <span class="normal-type">点击预约</span>
-                                                                    </a>
-                                                                </div>
+                                                                <c:choose>
+                                                                    <c:when test="${dayInfo.xwAvailable > 0}">
+                                                                        <div class="inner-border opening">
+                                                                            <a hidefocus="true" class="opening" href="appointment/${doctor.did}?dayInfo=${dayInfo.fullDate}(${dayInfo.week})下午">
+                                                                                <span class="normal-type">可约 (${dayInfo.xwAvailable})</span>
+                                                                            </a>
+                                                                        </div>
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <div class="inner-border">
+                                                                            <a hidefocus="true" href="javascript:void 0">
+                                                                                <span class="normal-type">已满</span>
+                                                                            </a>
+                                                                        </div>
+                                                                    </c:otherwise>
+                                                                </c:choose>
                                                             </c:if>
                                                             <c:if test="${dayInfo.xw != 1}">
                                                             <div class="inner-border ">
@@ -191,11 +213,22 @@
                                                     <c:forEach items="${dayInfoList}" var="dayInfo">
                                                         <td>
                                                             <c:if test="${dayInfo.ws == 1}">
-                                                                <div class="inner-border opening">
-                                                                    <a hidefocus="true" class="opening" href="appointment/${doctor.did}?dayInfo=${dayInfo.fullDate}(${dayInfo.week})晚上">
-                                                                        <span class="normal-type">点击预约</span>
-                                                                    </a>
-                                                                </div>
+                                                                <c:choose>
+                                                                    <c:when test="${dayInfo.wsAvailable > 0}">
+                                                                        <div class="inner-border opening">
+                                                                            <a hidefocus="true" class="opening" href="appointment/${doctor.did}?dayInfo=${dayInfo.fullDate}(${dayInfo.week})晚上">
+                                                                                <span class="normal-type">可约 (${dayInfo.wsAvailable})</span>
+                                                                            </a>
+                                                                        </div>
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <div class="inner-border">
+                                                                            <a hidefocus="true" href="javascript:void 0">
+                                                                                <span class="normal-type">已满</span>
+                                                                            </a>
+                                                                        </div>
+                                                                    </c:otherwise>
+                                                                </c:choose>
                                                             </c:if>
                                                             <c:if test="${dayInfo.ws != 1}">
                                                             <div class="inner-border ">
@@ -228,7 +261,53 @@
                             <p class="ys-util-text-smaller ys-util-margin-t10">${doctor.description}</p>
                         </div>
                         <!-- 用户评价 -->
-
+                        <div class="doctor-comment">
+                            <h3 class="ys-util-text-medium" style="margin-top: 30px;">患者评价 <span class="ys-util-text-primary">${commentCount}</span> 条评论</h3>
+                            <div class="comment-summary" style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 4px;">
+                                <div style="display: inline-block; vertical-align: middle;">
+                                    <span class="ys-util-text-primary" style="font-size: 36px; font-weight: bold;">${avgScore > 0 ? String.format("%.1f", avgScore) : "暂无"}</span>
+                                    <span class="ys-util-text-secondary" style="font-size: 14px;">/10分</span>
+                                </div>
+                                <div style="display: inline-block; vertical-align: middle; margin-left: 20px;">
+                                    <div style="margin-bottom: 5px;">
+                                        <span class="ys-util-text-secondary">医生态度：</span>
+                                        <span class="ys-util-text-primary">${avgScore > 0 ? String.format("%.1f", avgScore * 0.95) : "-"}</span>
+                                    </div>
+                                    <div>
+                                        <span class="ys-util-text-secondary">治疗效果：</span>
+                                        <span class="ys-util-text-primary">${avgScore > 0 ? String.format("%.1f", avgScore * 0.9) : "-"}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <c:if test="${empty commentList}">
+                                <div style="text-align: center; padding: 40px; color: #999;">
+                                    <img src="images/no-comment.png" alt="暂无评价" style="width: 60px; margin-bottom: 10px;">
+                                    <p>暂无患者评价</p>
+                                </div>
+                            </c:if>
+                            <c:if test="${not empty commentList}">
+                                <c:forEach items="${commentList}" var="comment">
+                                    <div class="comment-item" style="padding: 15px 0; border-bottom: 1px solid #eee;">
+                                        <div style="margin-bottom: 10px;">
+                                            <span class="ys-util-text-normal" style="font-weight: bold;">${not empty comment.username ? comment.username : '匿名用户'}</span>
+                                            <span class="ys-util-text-secondary" style="margin-left: 10px; font-size: 12px;"><fmt:formatDate value="${comment.createtime}" pattern="yyyy-MM-dd HH:mm"/></span>
+                                        </div>
+                                        <div style="margin-bottom: 8px;">
+                                            <span class="ys-util-text-primary">评分: ${comment.score}</span>
+                                            <span class="ys-util-text-secondary" style="margin-left: 15px;">
+                                                <c:forEach begin="1" end="${Math.floor(comment.score / 2)}" var="i">
+                                                    <img src="images/pic_star_light.png" style="width: 16px; height: 16px;">
+                                                </c:forEach>
+                                                <c:forEach begin="1" end="${5 - Math.floor(comment.score / 2)}" var="i">
+                                                    <img src="images/pic_star_light_gray.png" style="width: 16px; height: 16px;">
+                                                </c:forEach>
+                                            </span>
+                                        </div>
+                                        <p class="ys-util-text-normal" style="line-height: 1.6;">${comment.content}</p>
+                                    </div>
+                                </c:forEach>
+                            </c:if>
+                        </div>
 
                     </div>
                 </article>

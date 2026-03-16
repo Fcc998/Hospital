@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ming.hospital.dao.CommentMapper" >
+  <resultMap id="BaseResultMap" type="com.ming.hospital.pojo.Comment" >
+    <id column="cid" property="cid" jdbcType="BIGINT" />
+    <result column="did" property="did" jdbcType="BIGINT" />
+    <result column="uid" property="uid" jdbcType="BIGINT" />
+    <result column="score" property="score" jdbcType="FLOAT" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="CommentWithUserMap" type="com.ming.hospital.pojo.Comment" extends="BaseResultMap">
+    <result column="username" property="username" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    cid, did, uid, score, content, createtime
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from comment
+    where cid = #{cid,jdbcType=BIGINT}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from comment
+    where cid = #{cid,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="insert" parameterType="com.ming.hospital.pojo.Comment" >
+    insert into comment (cid, did, uid, score, 
+      content, createtime)
+    values (#{cid,jdbcType=BIGINT}, #{did,jdbcType=BIGINT}, #{uid,jdbcType=BIGINT}, #{score,jdbcType=FLOAT}, 
+      #{content,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.ming.hospital.pojo.Comment" >
+    insert into comment
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cid != null" >
+        cid,
+      </if>
+      <if test="did != null" >
+        did,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="score != null" >
+        score,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="cid != null" >
+        #{cid,jdbcType=BIGINT},
+      </if>
+      <if test="did != null" >
+        #{did,jdbcType=BIGINT},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=BIGINT},
+      </if>
+      <if test="score != null" >
+        #{score,jdbcType=FLOAT},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.ming.hospital.pojo.Comment" >
+    update comment
+    <set >
+      <if test="did != null" >
+        did = #{did,jdbcType=BIGINT},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=BIGINT},
+      </if>
+      <if test="score != null" >
+        score = #{score,jdbcType=FLOAT},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where cid = #{cid,jdbcType=BIGINT}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.ming.hospital.pojo.Comment" >
+    update comment
+    set did = #{did,jdbcType=BIGINT},
+      uid = #{uid,jdbcType=BIGINT},
+      score = #{score,jdbcType=FLOAT},
+      content = #{content,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=TIMESTAMP}
+    where cid = #{cid,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByDoctorId" parameterType="java.lang.Long" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from comment
+    where did = #{did,jdbcType=BIGINT}
+    order by createtime desc
+  </select>
+
+  <select id="selectByDoctorIdWithUser" parameterType="java.lang.Long" resultMap="CommentWithUserMap" >
+    select c.*, u.name as username
+    from comment c
+    left join user u on c.uid = u.uid
+    where c.did = #{did,jdbcType=BIGINT}
+    order by c.createtime desc
+  </select>
+
+  <select id="getAvgScoreByDoctorId" parameterType="java.lang.Long" resultType="java.lang.Float" >
+    select avg(score) from comment where did = #{did,jdbcType=BIGINT}
+  </select>
+
+  <select id="countByDoctorId" parameterType="java.lang.Long" resultType="java.lang.Integer" >
+    select count(1) from comment where did = #{did,jdbcType=BIGINT}
+  </select>
+</mapper>

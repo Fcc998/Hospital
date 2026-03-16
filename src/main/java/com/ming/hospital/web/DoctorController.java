@@ -1,10 +1,13 @@
 package com.ming.hospital.web;
 
 import com.ming.hospital.dto.DoctorPage;
+import com.ming.hospital.pojo.Comment;
 import com.ming.hospital.pojo.DayInfo;
 import com.ming.hospital.pojo.Dept;
 import com.ming.hospital.pojo.Doctor;
 import com.ming.hospital.pojo.Page;
+import com.ming.hospital.service.AppointmentService;
+import com.ming.hospital.service.CommentService;
 import com.ming.hospital.service.DeptService;
 import com.ming.hospital.service.DoctorService;
 import com.ming.hospital.utils.DateUtils;
@@ -30,6 +33,10 @@ public class DoctorController {
     private DoctorService doctorService;
     @Autowired
     private DeptService deptService;
+    @Autowired
+    private AppointmentService appointmentService;
+    @Autowired
+    private CommentService commentService;
 
 
 
@@ -69,20 +76,32 @@ public class DoctorController {
             for (String  time : times) {
                 if(dayInfo.getWeek() .equals(time.substring(0,3)) ){
                     time = time.substring(3); //取上午、下午、晚上
+                    String visitTime = dayInfo.getFullDate() + "(" + dayInfo.getWeek() + ")" + time;
+                    int booked = appointmentService.countByDoctorAndTime(id, visitTime);
                     if(time.equals("上午")){
                         dayInfo.setSw(1);
+                        dayInfo.setSwAvailable(20 - booked);
                     }else if(time.equals("下午")){
                         dayInfo.setXw(1);
+                        dayInfo.setXwAvailable(20 - booked);
                     }else{
                         dayInfo.setWs(1);
+                        dayInfo.setWsAvailable(20 - booked);
                     }
                 }
             }
             dayInfoList.add(dayInfo);
             date.setTime(date.getTime() + 1000*60*60*24);
         }
+        List<Comment> commentList = commentService.getCommentsWithUserByDoctorId(id);
+        Float avgScore = commentService.getAvgScoreByDoctorId(id);
+        int commentCount = commentService.countByDoctorId(id);
+        if(avgScore == null) avgScore = 0f;
         model.addAttribute("doctor",doctor);
         model.addAttribute("dayInfoList",dayInfoList);
+        model.addAttribute("commentList",commentList);
+        model.addAttribute("avgScore",avgScore);
+        model.addAttribute("commentCount",commentCount);
 
         return "doctor_detail";
     }

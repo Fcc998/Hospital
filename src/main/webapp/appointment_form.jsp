@@ -201,7 +201,7 @@
                         alert('对不起,您已经预约过该医生了,不能重复预约!');
                     }
                     else{
-                        alert('恭喜您,预约成功,您的预约顺序号是：'+data+',请记住您的序号!');
+                        location.href = 'appointment/pay/' + data;
                     }
                 }
             });

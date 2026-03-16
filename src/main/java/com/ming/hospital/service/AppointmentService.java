@@ -17,4 +17,10 @@ public interface AppointmentService {
 
     List<Appointment> listAll();
 
+    int countByDoctorAndTime(Long did, String visitTime);
+
+    Appointment getById(Long aid);
+
+    Boolean updatePayStatus(Long aid, Integer payStatus, String payType, Double payAmount);
+
 }

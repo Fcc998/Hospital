@@ -2,7 +2,8 @@
 SQLyog Ultimate v11.5 (64 bit)
 MySQL - 5.6.21-log : Database - healerworld
 *********************************************************************
-*/
+*/
+
 
 /*!40101 SET NAMES utf8 */;
 
@@ -30,6 +31,10 @@ CREATE TABLE `appointment` (
   `aphone` varchar(20) DEFAULT NULL,
   `createtime` datetime DEFAULT NULL,
   `updatetime` datetime DEFAULT NULL,
+  `pay_status` int(11) DEFAULT '0' COMMENT '0-未支付 1-已支付',
+  `pay_type` varchar(20) DEFAULT NULL COMMENT '支付方式：alipay-支付宝 wechat-微信',
+  `pay_amount` decimal(10,2) DEFAULT NULL,
+  `pay_time` datetime DEFAULT NULL,
   PRIMARY KEY (`uid`,`did`),
   UNIQUE KEY `aid` (`aid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -126,3 +131,26 @@ insert  into `user`(`uid`,`user`,`pwd`,`name`,`gender`,`email`,`phone`,`createTi
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+/*Table structure for table `comment` */
+
+DROP TABLE IF EXISTS `comment`;
+
+CREATE TABLE `comment` (
+  `cid` bigint(20) NOT NULL,
+  `did` bigint(20) NOT NULL,
+  `uid` bigint(20) NOT NULL,
+  `score` float DEFAULT NULL,
+  `content` varchar(1000) DEFAULT NULL,
+  `createtime` datetime DEFAULT NULL,
+  PRIMARY KEY (`cid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Data for the table `comment` */
+
+insert  into `comment`(`cid`,`did`,`uid`,`score`,`content`,`createtime`) values 
+(151168892600381,1,151093275581282,9.5,'医生态度很好，医术精湛，治疗效果显著！','2017-11-26 17:35:26'),
+(151168892600382,1,151093275581282,9.0,'很专业的医生，耐心解答了我的问题。','2017-11-27 10:20:00'),
+(151168892600383,4,151093275581282,9.8,'李医生非常细心，讲解很清楚，值得信赖！','2017-11-26 19:15:28'),
+(151168892600384,1,151093312149388,8.5,'医生经验丰富，给了很好的治疗建议。','2017-11-28 14:30:00'),
+(151168892600385,2,151093275581282,9.2,'张主任医术高明，治疗后恢复很快！','2017-11-25 09:15:00');
