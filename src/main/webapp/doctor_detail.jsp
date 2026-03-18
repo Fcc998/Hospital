@@ -228,7 +228,26 @@
                             <p class="ys-util-text-smaller ys-util-margin-t10">${doctor.description}</p>
                         </div>
                         <!-- 用户评价 -->
-
+                        <div class="doctor-comment" id="comment-section" style="margin-top:20px;">
+                            <h3 class="ys-util-text-medium">患者评价</h3>
+                            <div id="comment-stats" style="padding:15px;background:#f9f9f9;border-radius:4px;margin:10px 0;">
+                                <span>平均评分：<strong id="avg-score" style="color:#ff6a00;font-size:20px;">--</strong></span>
+                                <span style="margin-left:20px;">评价数：<span id="comment-count">--</span></span>
+                            </div>
+                            <div id="comment-list"></div>
+                            <div id="comment-form" style="margin-top:20px;padding:15px;background:#f9f9f9;border-radius:4px;">
+                                <h4 style="margin-bottom:10px;">发表评价</h4>
+                                <div class="rating" style="margin-bottom:10px;">
+                                    <span>评分：</span>
+                                    <c:forEach var="i" begin="1" end="5">
+                                        <span class="star" data-score="${i}" onclick="setScore(${i})" style="font-size:24px;color:#ddd;cursor:pointer;">★</span>
+                                    </c:forEach>
+                                    <input type="hidden" id="score" value="5">
+                                </div>
+                                <textarea id="comment-content" placeholder="请输入您的评价..." style="width:100%;height:80px;padding:10px;border:1px solid #ddd;border-radius:4px;"></textarea>
+                                <button onclick="submitComment()" style="margin-top:10px;padding:10px 20px;background:#2896f3;color:#fff;border:none;border-radius:4px;cursor:pointer;">提交评价</button>
+                            </div>
+                        </div>
 
                     </div>
                 </article>
@@ -275,7 +294,78 @@
 
 <script src="js/jquery-1.11.2.min.js"></script>
 <script type="text/javascript">
-
+    var currentScore = 5;
+    var doctorId = '${doctor.did}';
+    
+    function setScore(score) {
+        currentScore = score;
+        $('#score').val(score);
+        $('.star').each(function() {
+            if ($(this).data('score') <= score) {
+                $(this).css('color', '#ffc107');
+            } else {
+                $(this).css('color', '#ddd');
+            }
+        });
+    }
+    
+    function loadComments() {
+        $.get('${pageContext.request.contextPath}/comment/list/' + doctorId, function(res) {
+            if (res.success) {
+                var avgScore = res.avgScore ? res.avgScore.toFixed(1) : '--';
+                $('#avg-score').text(avgScore);
+                $('#comment-count').text(res.count);
+                
+                var html = '';
+                if (res.comments.length === 0) {
+                    html = '<p style="text-align:center;color:#999;padding:20px;">暂无评价</p>';
+                } else {
+                    res.comments.forEach(function(c) {
+                        var stars = '';
+                        for (var i = 0; i < 5; i++) {
+                            stars += i < c.score ? '★' : '☆';
+                        }
+                        var date = new Date(c.createtime);
+                        html += '<div style="padding:15px;border-bottom:1px solid #eee;">' +
+                            '<div style="display:flex;justify-content:space-between;margin-bottom:10px;">' +
+                            '<span style="font-weight:bold;">' + c.uname + '</span>' +
+                            '<span style="color:#ffc107;">' + stars + '</span>' +
+                            '</div>' +
+                            '<div style="color:#999;font-size:12px;margin-bottom:10px;">' + date.toLocaleString() + '</div>' +
+                            '<div style="color:#666;line-height:1.6;">' + (c.content || '用户未填写评价内容') + '</div>' +
+                            '</div>';
+                    });
+                }
+                $('#comment-list').html(html);
+            }
+        });
+    }
+    
+    function submitComment() {
+        var content = $('#comment-content').val();
+        if (!content.trim()) {
+            alert('请输入评价内容');
+            return;
+        }
+        $.post('${pageContext.request.contextPath}/comment/add', {
+            did: doctorId,
+            score: currentScore,
+            content: content
+        }, function(res) {
+            if (res.success) {
+                alert('评价成功！');
+                $('#comment-content').val('');
+                loadComments();
+            } else {
+                alert(res.msg);
+            }
+        });
+    }
+    
+    $(function() {
+        setScore(5);
+        loadComments();
+    });
 </script>
 </body>
 </html>

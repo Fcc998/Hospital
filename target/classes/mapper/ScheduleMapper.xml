@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ming.hospital.dao.ScheduleMapper">
+
+    <resultMap id="BaseResultMap" type="com.ming.hospital.pojo.Schedule">
+        <id column="sid" property="sid"/>
+        <result column="did" property="did"/>
+        <result column="schedule_date" property="scheduleDate"/>
+        <result column="time_period" property="timePeriod"/>
+        <result column="total_num" property="totalNum"/>
+        <result column="remain_num" property="remainNum"/>
+        <result column="price" property="price"/>
+        <result column="createtime" property="createtime"/>
+        <result column="updatetime" property="updatetime"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.ming.hospital.pojo.Schedule">
+        INSERT INTO schedule (sid, did, schedule_date, time_period, total_num, remain_num, price, createtime, updatetime)
+        VALUES (#{sid}, #{did}, #{scheduleDate}, #{timePeriod}, #{totalNum}, #{remainNum}, #{price}, #{createtime}, #{updatetime})
+    </insert>
+
+    <update id="updateRemainNum">
+        UPDATE schedule SET remain_num = #{num}, updatetime = NOW() WHERE sid = #{sid}
+    </update>
+
+    <update id="decreaseRemainNum">
+        UPDATE schedule SET remain_num = remain_num - 1, updatetime = NOW() 
+        WHERE sid = #{sid} AND remain_num > 0
+    </update>
+
+    <update id="increaseRemainNum">
+        UPDATE schedule SET remain_num = remain_num + 1, updatetime = NOW() 
+        WHERE sid = #{sid} AND remain_num &lt; total_num
+    </update>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        SELECT * FROM schedule WHERE sid = #{sid}
+    </select>
+
+    <select id="selectByDoctorAndDate" resultMap="BaseResultMap">
+        SELECT * FROM schedule WHERE did = #{did} AND schedule_date = #{date} AND time_period = #{timePeriod}
+    </select>
+
+    <select id="selectByDoctorId" resultMap="BaseResultMap">
+        SELECT * FROM schedule 
+        WHERE did = #{did} AND schedule_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY schedule_date, time_period
+    </select>
+
+</mapper>

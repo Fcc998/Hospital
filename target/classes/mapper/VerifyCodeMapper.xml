@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ming.hospital.dao.VerifyCodeMapper">
+
+    <resultMap id="BaseResultMap" type="com.ming.hospital.pojo.VerifyCode">
+        <id column="vid" property="vid"/>
+        <result column="target" property="target"/>
+        <result column="code" property="code"/>
+        <result column="type" property="type"/>
+        <result column="expire_time" property="expireTime"/>
+        <result column="used" property="used"/>
+        <result column="createtime" property="createtime"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.ming.hospital.pojo.VerifyCode">
+        INSERT INTO verify_code (vid, target, code, type, expire_time, used, createtime)
+        VALUES (#{vid}, #{target}, #{code}, #{type}, #{expireTime}, #{used}, #{createtime})
+    </insert>
+
+    <update id="markAsUsed">
+        UPDATE verify_code SET used = 1 WHERE vid = #{vid}
+    </update>
+
+    <delete id="deleteExpired">
+        DELETE FROM verify_code WHERE expire_time &lt; NOW()
+    </delete>
+
+    <select id="selectValidCode" resultMap="BaseResultMap">
+        SELECT * FROM verify_code 
+        WHERE target = #{target} AND code = #{code} AND type = #{type} 
+        AND used = 0 AND expire_time > NOW()
+        ORDER BY createtime DESC LIMIT 1
+    </select>
+
+</mapper>

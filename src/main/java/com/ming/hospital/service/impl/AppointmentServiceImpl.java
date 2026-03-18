@@ -6,16 +6,13 @@ import com.ming.hospital.pojo.AppointmentExample;
 import com.ming.hospital.service.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
-/**
- * Created by Ming on 2017/11/17.
- */
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
     @Autowired
     private AppointmentMapper appointmentMapper;
+    
     @Override
     public Integer selectTimesFromHospital(Long hid) {
         Integer integer = appointmentMapper.selectTimesFromHospital(hid);
@@ -24,10 +21,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Boolean save(Appointment appointment) {
-        try{
+        try {
             appointmentMapper.insert(appointment);
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
         }
@@ -39,5 +36,16 @@ public class AppointmentServiceImpl implements AppointmentService {
         return appointments;
     }
 
+    @Override
+    public Appointment getById(Long aid) {
+        return appointmentMapper.selectByPrimaryKey(aid);
+    }
 
+    @Override
+    public List<Appointment> getByUid(Long uid) {
+        AppointmentExample example = new AppointmentExample();
+        example.createCriteria().andUidEqualTo(uid);
+        example.setOrderByClause("createtime DESC");
+        return appointmentMapper.selectByExample(example);
+    }
 }

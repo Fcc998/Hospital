@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ming.hospital.dao.CommentMapper">
+
+    <resultMap id="BaseResultMap" type="com.ming.hospital.pojo.Comment">
+        <id column="cid" property="cid"/>
+        <result column="uid" property="uid"/>
+        <result column="did" property="did"/>
+        <result column="score" property="score"/>
+        <result column="content" property="content"/>
+        <result column="createtime" property="createtime"/>
+        <result column="updatetime" property="updatetime"/>
+        <result column="uname" property="uname"/>
+        <result column="dname" property="dname"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.ming.hospital.pojo.Comment">
+        INSERT INTO comment (cid, uid, did, score, content, createtime, updatetime)
+        VALUES (#{cid}, #{uid}, #{did}, #{score}, #{content}, #{createtime}, #{updatetime})
+    </insert>
+
+    <select id="selectByDoctorId" resultMap="BaseResultMap">
+        SELECT c.*, u.name as uname, d.dname
+        FROM comment c
+        LEFT JOIN user u ON c.uid = u.uid
+        LEFT JOIN doctor d ON c.did = d.did
+        WHERE c.did = #{did}
+        ORDER BY c.createtime DESC
+    </select>
+
+    <select id="getAverageScoreByDoctorId" resultType="java.lang.Double">
+        SELECT AVG(score) FROM comment WHERE did = #{did}
+    </select>
+
+    <select id="countByDoctorId" resultType="int">
+        SELECT COUNT(*) FROM comment WHERE did = #{did}
+    </select>
+
+</mapper>
